@@ -3,7 +3,7 @@ SELECT * FROM EMPLOYEES;
 --PK는 EMPLOYEE_ID(중복X임)
 --FK는 DEPARTMENT_ID (다른테이블의 주키, 중복O)
 
---특정 컬럼만 조회하려면 나열      //왜 오류!?!?!
+--특정 컬럼만 조회하려면 나열
 SELECT EMPLOYEE_ID, FIRST_NAME, PHONE_NUMBER FROM EMPLOYEES;
 
 --문자, 날짜는 왼쪽으로 표시, 숫자는 오른쪽에 나타납니다.
