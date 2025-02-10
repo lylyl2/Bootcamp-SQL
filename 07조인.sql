@@ -1,0 +1,145 @@
+--INNER JOIN(내부조인)
+SELECT * FROM INFO;
+
+SELECT * FROM INFO INNER JOIN AUTH ON INFO.AUTH_ID = AUTH.AUTH_ID; --붙을 수 없는 데이터는 안나옴 //INNER 키워드 생략 가능
+
+--컬럼 지정 //굳이 ID 두 개 필요 없어서!
+--AUTH_ID는 양쪽에 다 있기 때문에 출력할 때 테이블명.컬럼명 으로 지정해야 합니다.
+SELECT ID, TITLE, CONTENT, AUTH_ID, NAME, JOB
+FROM INFO INNER JOIN AUTH ON INFO.AUTH_ID = AUTH.AUTH_ID; --COLUMN AMBIGUOUSLY DEFINED 모호하다. //AUTH_ID가 왼쪽인지 오른쪽인지 지정해라.
+
+SELECT ID, TITLE, CONTENT, AUTH.AUTH_ID, NAME, JOB --테이블 이름 지정하자. 또는 INFO.AUTH_ID여도 상관없다. 양쪽에 다 있기 때문에
+FROM INFO INNER JOIN AUTH ON INFO.AUTH_ID = AUTH.AUTH_ID;
+
+--테이블 ALIAS //별칭 지어주는거 - 테이블 뒤에 한 칸 띄어쓰기 별칭명
+SELECT I.ID,
+       I.AUTH_ID,
+       A.NAME
+FROM INFO I --INFO테이블을 I라는 별칭으로 주겠다
+INNER JOIN AUTH A
+ON I.AUTH_ID = A.AUTH_ID;
+--USING절(참고만) - 양쪽 테이블에 동일 키 이름으로 연결할 때 사용이 가능합니다.
+SELECT *
+FROM INFO I
+INNER JOIN AUTH A
+USING (AUTH_ID);
+
+--------------------------------------------------------------------------------
+--외부조인이라 부릅니다.
+--LEFT OUTER JOIN - 왼쪽 테이블이 기준이 되고, 왼쪽 테이블은 다나옴
+SELECT *
+FROM INFO I
+LEFT OUTER JOIN AUTH A --OUTER 생략 가능
+ON I.AUTH_ID = A.AUTH_ID;
+
+--RIGHT OUTER JOIN - 오른쪽 테이블이 기준이 되고, 오른쪽 테이블은 다나옴
+SELECT *
+FROM INFO I
+RIGHT OUTER JOIN AUTH A
+ON I.AUTH_ID = A.AUTH_ID;
+
+--FULL OUTER JOIN - 양쪽 테이블이 누락 없이 다나옴
+SELECT *
+FROM INFO I
+FULL OUTER JOIN AUTH A
+ON I.AUTH_ID = A.AUTH_ID;
+
+--번외 CROSS 조인 - 잘못된 조인의 형태(오라클에서 "카디시안 프로덕트"라고 부른다) //용어만 알아두자
+SELECT *
+FROM INFO
+CROSS JOIN AUTH A; --ON절이 없음
+
+--------------------------------------------------------------------------------
+SELECT * FROM EMPLOYEES;
+SELECT * FROM DEPARTMENTS;
+SELECT * FROM LOCATIONS;
+
+SELECT *
+FROM EMPLOYEES E
+LEFT JOIN DEPARTMENTS D
+ON E.DEPARTMENT_ID = D.DEPARTMENT_ID;
+
+--조인이 3개 이상도 될까요? -> ㅇㅇ됨
+SELECT *
+FROM EMPLOYEES E
+INNER JOIN DEPARTMENTS D
+ON E.DEPARTMENT_ID = D.DEPARTMENT_ID
+LEFT JOIN LOCATIONS L
+ON L.LOCATION_ID = L.LOCATION_ID;
+
+--------------------------------------------------------------------------------
+--문제 1.
+--EMPLOYEES 테이블과, DEPARTMENTS 테이블은 DEPARTMENT_ID로 연결되어 있습니다.
+--EMPLOYEES, DEPARTMENTS 테이블을 엘리어스를 이용해서 
+--각각 INNER , LEFT OUTER, RIGHT OUTER, FULL OUTER 조인 하세요. (달라지는 행의 개수 확인)
+SELECT *
+FROM EMPLOYEES E
+INNER JOIN DEPARTMENTS D
+ON E.DEPARTMENT_ID = D.DEPARTMENT_ID; --106행
+
+SELECT *
+FROM EMPLOYEES E
+LEFT JOIN DEPARTMENTS D
+ON E.DEPARTMENT_ID = D.DEPARTMENT_ID; --107행
+
+SELECT *
+FROM EMPLOYEES E
+RIGHT JOIN DEPARTMENTS D
+ON E.DEPARTMENT_ID = D.DEPARTMENT_ID; --122행
+
+SELECT *
+FROM EMPLOYEES E
+FULL JOIN DEPARTMENTS D
+ON E.DEPARTMENT_ID = D.DEPARTMENT_ID; --123행
+
+--문제 2.
+--EMPLOYEES, DEPARTMENTS 테이블을 INNER JOIN하세요
+--조건)employee_id가 200인 사람의 이름, department_id를 출력하세요
+--조건)이름 컬럼은 first_name과 last_name을 합쳐서 출력합니다
+SELECT E.FIRST_NAME || ' ' || E.LAST_NAME AS 이름, E.DEPARTMENT_ID
+FROM EMPLOYEES E
+INNER JOIN DEPARTMENTS D
+ON E.DEPARTMENT_ID = D.DEPARTMENT_ID
+WHERE E.EMPLOYEE_ID = 200;
+
+--문제 3.
+--EMPLOYEES, JOBS테이블을 INNER JOIN하세요
+--조건) 모든 사원의 이름과 직무아이디, 직무 타이틀을 출력하고, 이름 기준으로 오름차순 정렬
+--HINT) 어떤 컬럼으로 서로 연결되 있는지 확인
+SELECT * FROM JOBS;
+SELECT * FROM EMPLOYEES;
+
+SELECT E.FIRST_NAME || ' ' || E.LAST_NAME AS 이름, E.JOB_ID AS 직무아이디, J.JOB_TITLE AS 직무타이틀
+FROM EMPLOYEES E
+INNER JOIN JOBS J
+ON E.JOB_ID = J.JOB_ID
+ORDER BY 이름;
+
+
+--문제 4.
+--JOBS테이블과 JOB_HISTORY테이블을 LEFT_OUTER JOIN 하세요.
+SELECT * FROM JOBS;
+SELECT * FROM JOB_HISTORY;
+
+SELECT *
+FROM JOBS S
+LEFT JOIN JOB_HISTORY H
+ON S.JOB_ID = H.JOB_ID;
+
+
+--문제 5.
+--Steven King의 부서명을 출력하세요.
+SELECT * FROM EMPLOYEES;
+SELECT * FROM DEPARTMENTS;
+
+SELECT DEPARTMENT_NAME
+FROM EMPLOYEES E
+LEFT JOIN DEPARTMENTS D
+ON E.DEPARTMENT_ID = D.DEPARTMENT_ID
+WHERE E.FIRST_NAME || ' ' || E.LAST_NAME = 'Steven King';
+
+--문제 6.
+--EMPLOYEES 테이블과 DEPARTMENTS 테이블을 Cartesian Product(Cross join)처리하세요
+SELECT *
+FROM EMPLOYEES
+CROSS JOIN DEPARTMENTS;
