@@ -1,0 +1,3 @@
+CREATE TABLE EX (
+    NAME VARCHAR2(10)
+);
